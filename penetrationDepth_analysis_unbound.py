@@ -131,6 +131,8 @@ def analyze(df, filename):
 
     #d_values = df.iloc[1, 2:].values.astype(float)
     d_values = df.iloc[x_val_rownums[0], 2:].values.astype(float)
+    # try with base data, which should be immediately above the adjusted data
+    #d_values = df.iloc[x_val_rownums[0] -1, 2:].values.astype(float)
     
     d_plot = np.linspace(0, 500, 500)
     
