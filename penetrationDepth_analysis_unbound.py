@@ -48,9 +48,9 @@ def exp_fit(measurement: np.array, d: np.array):
     alpha_guess = 0.02                # corresponds to 50um
     c_guess = 5
     
-    #p_fit, cov_matrix = curve_fit(exponential_decay, d, measurement, p0=[alpha_guess, c_guess])
-    p_fit, cov_matrix = curve_fit(exponential_decay, d, measurement, p0=[alpha_guess, c_guess],
-                               bounds=([0, 3], [np.inf, 100]))
+    p_fit, cov_matrix = curve_fit(exponential_decay, d, measurement, p0=[alpha_guess, c_guess])
+    #p_fit, cov_matrix = curve_fit(exponential_decay, d, measurement, p0=[alpha_guess, c_guess],
+                               #bounds=([0, -30], [np.inf, 100]))
     
     alpha_fit, c_fit = p_fit    
     penetration_depth = 1/alpha_fit
@@ -180,7 +180,6 @@ def analyze(df, filename):
     
     absorbance = 100 - (transmission_fit + reflection_fit)
    
-    
    
     
    # PLOT
