@@ -27,6 +27,9 @@ import pandas as pd
 import seaborn as sns
 
 import argparse
+from scipy.stats import kstest
+from scipy.stats import norm
+from scipy.stats import lognorm
 
 def askFilePath():
     root = tk.Tk()
@@ -331,6 +334,14 @@ def analyzeMonteCarlo(df, includeZero=False, numRuns=1000):
     print(f"Mean Dp: {np.mean(penetration_depths)}")
     print(f"Dp standard deviation: {np.std(penetration_depths)}")
     #print(f"Dp population standard deviation: {np.sqrt(penetration_depths.shape[0])*np.std(penetration_depths)}")
+
+    # Kolmogorov-Smirnov test for goodness-of-fit of normal and lognormal distributions for the observed various Dp
+    print(f"Kolmogorov-Smirnov test for normal distribution: {kstest(penetration_depths, lambda x: norm.cdf(x, loc=np.mean(penetration_depths), scale=np.std(penetration_depths)))}")
+    print(f"Kolmogorov-Smirnov test for lognormal distribution with s=1: {kstest(penetration_depths, lambda x: lognorm.cdf(x, 1, loc=np.mean(penetration_depths), scale=np.std(penetration_depths)))}")
+    print(f"Kolmogorov-Smirnov test for lognormal distribution with s=0.5: {kstest(penetration_depths, lambda x: lognorm.cdf(x, 0.5, loc=np.mean(penetration_depths), scale=np.std(penetration_depths)))}")
+    print(f"Kolmogorov-Smirnov test for lognormal distribution with s=0.25: {kstest(penetration_depths, lambda x: lognorm.cdf(x, 0.25, loc=np.mean(penetration_depths), scale=np.std(penetration_depths)))}")
+
+    # plotting stuff
     plt.figure()
     plt.hist(penetration_depths, bins=30)
     plt.title(r"$D_p$ histogram")
