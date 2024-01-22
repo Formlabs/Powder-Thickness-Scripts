@@ -189,7 +189,7 @@ def analyze(df, filename, useOriginalThickness=False, includeZero=False):
    # Print metrics that we care about
     # calculate sum of squares of residuals, print that
     # calculate at d_values
-    rss = np.sum((exponential_decay(d_values, t_alpha_fit, t_c_fit) - t_mean_measured)**2)
+    rss = np.sum((exponential_decay(d_values[np.isfinite(d_values)], t_alpha_fit, t_c_fit) - t_mean_measured[np.isfinite(t_mean_measured)])**2)
     print(f"Sum of squares of residuals: {rss}")
     
    # PLOT
@@ -304,7 +304,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--includeZero", action="store_true")
     parser.add_argument("--useOriginalThickness", action="store_true")
-    parser.add_argument("--title", defualt="", type=str)
+    parser.add_argument("--title", default="", type=str)
 
     if os.path.isfile(path):
         try:
