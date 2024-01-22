@@ -304,6 +304,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--includeZero", action="store_true")
     parser.add_argument("--useOriginalThickness", action="store_true")
+    parser.add_argument("--title", defualt="", type=str)
 
     if os.path.isfile(path):
         try:
@@ -311,9 +312,14 @@ def main() -> None:
 
             df = pd.read_csv(path, header=None)
             #df = pd.read_csv(path, header=None).dropna()
-            filename = os.path.splitext(os.path.basename(path))[0]
+            #filename = os.path.splitext(os.path.basename(path))[0]
+            if parser.parse_args().title == "":
+                title = os.path.splitext(os.path.basename(path))[0]
+            else:
+                title = parser.parse_args().title
             
-            analyze(df, filename, includeZero=parser.parse_args().includeZero, useOriginalThickness=parser.parse_args().useOriginalThickness)
+            #analyze(df, filename, includeZero=parser.parse_args().includeZero, useOriginalThickness=parser.parse_args().useOriginalThickness)
+            analyze(df, title, includeZero=parser.parse_args().includeZero, useOriginalThickness=parser.parse_args().useOriginalThickness)
             
         except AssertionError:
             print('Invalid path,must supply valid csv')
