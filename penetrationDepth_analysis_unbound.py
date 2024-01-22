@@ -186,7 +186,11 @@ def analyze(df, filename, useOriginalThickness=False, includeZero=False):
     
     absorbance = 100 - (transmission_fit + reflection_fit)
    
-   
+   # Print metrics that we care about
+    # calculate sum of squares of residuals, print that
+    # calculate at d_values
+    rss = np.sum((exponential_decay(d_values, t_alpha_fit, t_c_fit) - t_mean_measured)**2)
+    print(f"Sum of squares of residuals: {rss}")
     
    # PLOT
    
