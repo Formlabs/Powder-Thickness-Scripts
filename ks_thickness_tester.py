@@ -9,6 +9,9 @@ import tkinter as tk
 from tkinter import filedialog
 
 
+import argparse
+
+
 def askFilePath():
     root = tk.Tk()
     root.withdraw()    
@@ -16,7 +19,7 @@ def askFilePath():
     #file_path = filedialog.askdirectory()
     return file_path
 
-def analyse_ks(df):
+def analyze_ks(df, sample1="Keyence PA12"):
     # get all unique shim settings:
     settings = df["Iris's measurements"].unique()
 
@@ -24,16 +27,19 @@ def analyse_ks(df):
     ks_results = {}
 
     for setting in settings:
-        PA12_thicknesses = df[df["Iris's measurements"]==setting]["Keyence PA12"]
-        other_thicknesses = df[df["Iris's measurements"]==setting].loc[:, "Keyence Raw":]
+        sample1_thicknesses = df[df["Iris's measurements"]==setting][sample1]
+        other_thicknesses = df[df["Iris's measurements"]==setting].drop(["Iris's measurements", sample1], axis=1)
 
         #ks_results.append(ks_2samp(PA12_thicknesses, other_thicknesses))
-        ks_results[setting] = (ks_2samp(PA12_thicknesses[np.isfinite(PA12_thicknesses)], np.ravel(other_thicknesses)[np.isfinite(np.ravel(other_thicknesses))]))
+        ks_results[setting] = (ks_2samp(sample1_thicknesses[np.isfinite(sample1_thicknesses)], np.ravel(other_thicknesses)[np.isfinite(np.ravel(other_thicknesses))]))
 
     return ks_results
 
 
 path = askFilePath()
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--sample1Name", default="Keyence PA12", type=str)
 
 if os.path.isfile(path):
         try:
@@ -43,7 +49,7 @@ if os.path.isfile(path):
 
             # read with header
             df = pd.read_csv(path)
-            results = analyse_ks(df)
+            results = analyze_ks(df, sample1=parser.parse_args().sample1Name)
             #print(results)
             for key in results.keys():
                  print(f"{key}, {results[key].pvalue}")
