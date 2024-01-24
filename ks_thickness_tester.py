@@ -58,7 +58,7 @@ if os.path.isfile(path):
 
             # read with header
             df = pd.read_csv(path)
-            results = analyze_ks(df, sample1=parser.parse_args().sample1Name, sample2=parser.parse_args().sample2Name)
+            results = analyze_ks(df, sample1=parser.parse_args().sample1Name, sample2=parser.parse_args().sample2Name, checkGaussian=parser.parse_args().checkGaussian)
             #print(results)
             for key in results.keys():
                  print(f"{key}, {results[key].pvalue}")
