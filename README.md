@@ -27,6 +27,8 @@ It is important that there are columns with titles are `Thickness` and `Relative
 #### Arguments
 `--includeZero`: if set, makes the script include the zero-point in both the plot and the fit. If not set, then the zero-point will be ignored.
 
+`--title`: if set, sets the title of the drawn graph. Otherwise, the title of the graph matches the selected CSV file without the file extension
+
 ### `penetrationDepth_analysis_unbound.py`
 Generates a plot of transmission vs thickness and fits a an exponential.
 However, this file is designed to work with the format used originally for the 1um laser measurements.
@@ -51,6 +53,10 @@ What's important with this file is the following:
 * Immediately above each must be a row with the corresponding originally-estimated thicknesses. 
 * Immediately below the `"Adjusted, direct"` row must be two rows of raw measured data.
 * The fist instance of this pattern must correspond to reflection measurements, the second must correspond to transmission measurements.
+#### Arguments
+`--useOriginalThickness`: if set, makes the script use the original thicknesses given above the lines starting with `Adjusted, direct`. Otherwise, the script uses the new thicknesses which are given in the lines starting with `Adjusted, direct`.
+
+`--title`: if set, sets the title of the drawn graph. Otherwise, the title of the graph matches the selected CSV file without the file extension
 
 ### `penetrationDepth_montecarlo_1um.py`
 Performs Monte Carlo analysis of the effect of thickness uncertainty on penetration depth. That is, given a standard deviation for each thickness, gets a bunch of sets of simulated thickness measurements and fits associates given transmittance values with them. Fits an exponential to these data points and calculates penetration depth with the same technique that is used by the aforementioned scripts. Then, reports on the distribution of these different penetration depths: draws a histogram and reports mean penetration depth, standard deviation, and KS fits to various distributions.
@@ -70,6 +76,8 @@ shim_210 + shim_210,335.600000,10.265368,8.90000,9.80000,501.00000
 note the first newline is after the word `Baseline`; I can't figure out how to disable text wrapping.
 
 The important thing is the columns starting with `Mean Keyence Thickness`, `Keyence Thickness Standard Deviation`, `Transmission 1`, `Transmission 2`, and `Baseline`. The first row must contain exactly these names.
+#### Arguments
+`--includeZero`: if set, makes the script include the zero-point in both the plot and the fit. If not set, then the zero-point will be ignored.
 
 ### `ks_thickness_tester.py`
 Performs a Kolmogorov-Smirnov test to see whether a set of given materials' thicknesses seem to come from the same population as a set of other materials' thicknesses.
@@ -100,3 +108,9 @@ python ks_thickness_tester.py --sample1Name "Keyence PA12" "Keyence Raw" --sampl
 
 This creates two samples that will be fed into the KS test: one is composed of the PA12 and raw nylon, the other is composed of blend 1 and blend 4. The two samples are compared against one another via the aforementioned KS test. If `--sample2Name` were omitted, all the remaining materials would be put into sample 2, which in this case would have exactly the same behaviour as the example usage given above (because the remaining materials are blend 1 and blend 4, which we initially put explicitly into sample 2).
 
+This can be used to compare each material against the others to find which ones are outliers in terms of layering behaviour. Another approach is to selectively exclude columns and look at how that changes the reported p-values.
+
+#### Arguments
+`--sample1Name`: if set, is a list of any number of e.g. material names, corresponding to the first entries in some columns in the provided CSV. If not specified, defaults to `Keyence PA12`. If the column(s) referenced by this argument do(es) not exist, everything crashes and burns. The specified columns are all put together /concatenated into Sample 1, which will be compared statistically to Sample 2 using the K-S test.
+
+`--sample2Name`: if set, is a list of any number of e.g. material names, corresponding to the first entries in some columns in the provided CSV. If not specified, all remaining columns (i.e. except `Irir's measurements` and those specified in Sample 1) will used. The specified columns are concatenated together to form Sample 2 to be compared against Sample 1 with the K-S test.
