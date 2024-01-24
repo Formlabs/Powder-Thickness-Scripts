@@ -1,6 +1,7 @@
 import pandas as pd
-#from scipy.stats import kstest
+from scipy.stats import kstest
 from scipy.stats import ks_2samp
+from scipy.stats import norm
 import numpy as np
 
 # to open a file
@@ -19,7 +20,7 @@ def askFilePath():
     #file_path = filedialog.askdirectory()
     return file_path
 
-def analyze_ks(df, sample1=["Keyence PA12"], sample2=None):
+def analyze_ks(df, sample1=["Keyence PA12"], sample2=None, checkGaussian=False):
     # get all unique shim settings:
     settings = df["Iris's measurements"].unique()
 
@@ -34,7 +35,10 @@ def analyze_ks(df, sample1=["Keyence PA12"], sample2=None):
              other_thicknesses = df[df["Iris's measurements"]==setting][sample2]
 
         #ks_results.append(ks_2samp(PA12_thicknesses, other_thicknesses))
-        ks_results[setting] = (ks_2samp(np.ravel(sample1_thicknesses[np.isfinite(sample1_thicknesses)]), np.ravel(other_thicknesses)[np.isfinite(np.ravel(other_thicknesses))]))
+        if checkGaussian:
+            ks_results[setting] = kstest(sample1_thicknesses, lambda x: norm.cdf(x, loc=np.mean(sample1_thicknesses), scale=np.std(sample1_thicknesses, ddof=1.5)))
+        else:
+            ks_results[setting] = (ks_2samp(np.ravel(sample1_thicknesses[np.isfinite(sample1_thicknesses)]), np.ravel(other_thicknesses)[np.isfinite(np.ravel(other_thicknesses))]))
 
     return ks_results
 
@@ -44,6 +48,7 @@ path = askFilePath()
 parser = argparse.ArgumentParser()
 parser.add_argument("--sample1Name", nargs='*', default=["Keyence PA12"])
 parser.add_argument("--sample2Name", nargs='*', default=None)
+parser.add_argument("--checkGaussian", action="store_true")
 
 if os.path.isfile(path):
         try:
