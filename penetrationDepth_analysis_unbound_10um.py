@@ -317,6 +317,7 @@ def main() -> None:
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--includeZero", action="store_true")
+    parser.add_argument("--title", default="", type=str)
     
     if os.path.isfile(path):
         try:
@@ -327,7 +328,12 @@ def main() -> None:
             # read with header
             df = pd.read_csv(path)
             #df = pd.read_csv(path, header=None).dropna()
-            filename = os.path.splitext(os.path.basename(path))[0]
+            #filename = os.path.splitext(os.path.basename(path))[0]
+            if parser.parse_args().title == "":
+                filename = os.path.splitext(os.path.basename(path))[0]
+            else:
+                filename = parser.parse_args().title
+
             
             analyze(df, filename, include_zero=parser.parse_args().includeZero)
             
