@@ -19,7 +19,7 @@ def askFilePath():
     #file_path = filedialog.askdirectory()
     return file_path
 
-def analyze_ks(df, sample1="Keyence PA12"):
+def analyze_ks(df, sample1=["Keyence PA12"], sample2=None):
     # get all unique shim settings:
     settings = df["Iris's measurements"].unique()
 
@@ -28,10 +28,13 @@ def analyze_ks(df, sample1="Keyence PA12"):
 
     for setting in settings:
         sample1_thicknesses = df[df["Iris's measurements"]==setting][sample1]
-        other_thicknesses = df[df["Iris's measurements"]==setting].drop(["Iris's measurements", sample1], axis=1)
+        if sample2 is None:
+            other_thicknesses = df[df["Iris's measurements"]==setting].drop(["Iris's measurements", *sample1], axis=1)
+        else:
+             other_thicknesses = df[df["Iris's measurements"]==setting][sample2]
 
         #ks_results.append(ks_2samp(PA12_thicknesses, other_thicknesses))
-        ks_results[setting] = (ks_2samp(sample1_thicknesses[np.isfinite(sample1_thicknesses)], np.ravel(other_thicknesses)[np.isfinite(np.ravel(other_thicknesses))]))
+        ks_results[setting] = (ks_2samp(np.ravel(sample1_thicknesses[np.isfinite(sample1_thicknesses)]), np.ravel(other_thicknesses)[np.isfinite(np.ravel(other_thicknesses))]))
 
     return ks_results
 
@@ -39,7 +42,8 @@ def analyze_ks(df, sample1="Keyence PA12"):
 path = askFilePath()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--sample1Name", default="Keyence PA12", type=str)
+parser.add_argument("--sample1Name", nargs='*', default=["Keyence PA12"])
+parser.add_argument("--sample2Name", nargs='*', default=None)
 
 if os.path.isfile(path):
         try:
@@ -49,7 +53,7 @@ if os.path.isfile(path):
 
             # read with header
             df = pd.read_csv(path)
-            results = analyze_ks(df, sample1=parser.parse_args().sample1Name)
+            results = analyze_ks(df, sample1=parser.parse_args().sample1Name, sample2=parser.parse_args().sample2Name)
             #print(results)
             for key in results.keys():
                  print(f"{key}, {results[key].pvalue}")
