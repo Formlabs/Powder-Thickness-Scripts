@@ -27,6 +27,8 @@ def analyze_ks(df, sample1=["Keyence PA12"], sample2=None, checkGaussian=False):
     # create list to hold KS results
     ks_results = {}
 
+    print(f"checkGaussian: {parser.parse_args().checkGaussian}")
+
     for setting in settings:
         sample1_thicknesses = df[df["Iris's measurements"]==setting][sample1]
         if sample2 is None:
@@ -36,7 +38,7 @@ def analyze_ks(df, sample1=["Keyence PA12"], sample2=None, checkGaussian=False):
 
         #ks_results.append(ks_2samp(PA12_thicknesses, other_thicknesses))
         if checkGaussian:
-            ks_results[setting] = kstest(sample1_thicknesses, lambda x: norm.cdf(x, loc=np.mean(sample1_thicknesses), scale=np.std(sample1_thicknesses, ddof=1.5)))
+            ks_results[setting] = kstest(np.ravel(sample1_thicknesses.values[np.isfinite(sample1_thicknesses)]), lambda x: norm.cdf(x, loc=np.mean(np.ravel(sample1_thicknesses.values[np.isfinite(sample1_thicknesses)])), scale=np.std(np.ravel(sample1_thicknesses.values[np.isfinite(sample1_thicknesses)]), ddof=1)))
         else:
             ks_results[setting] = (ks_2samp(np.ravel(sample1_thicknesses[np.isfinite(sample1_thicknesses)]), np.ravel(other_thicknesses)[np.isfinite(np.ravel(other_thicknesses))]))
 
