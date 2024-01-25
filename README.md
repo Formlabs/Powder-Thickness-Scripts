@@ -114,3 +114,5 @@ This can be used to compare each material against the others to find which ones 
 `--sample1Name`: if set, is a list of any number of e.g. material names, corresponding to the first entries in some columns in the provided CSV. If not specified, defaults to `Keyence PA12`. If the column(s) referenced by this argument do(es) not exist, everything crashes and burns. The specified columns are all put together /concatenated into Sample 1, which will be compared statistically to Sample 2 using the K-S test.
 
 `--sample2Name`: if set, is a list of any number of e.g. material names, corresponding to the first entries in some columns in the provided CSV. If not specified, all remaining columns (i.e. except `Irir's measurements` and those specified in Sample 1) will used. The specified columns are concatenated together to form Sample 2 to be compared against Sample 1 with the K-S test.
+
+`--checkGaussian`: if set, compares Sample 1 against a normal distribution whose mean and standard deviation are fitted to Sample 1.
